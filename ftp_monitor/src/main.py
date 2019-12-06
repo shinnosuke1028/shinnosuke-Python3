@@ -5,6 +5,7 @@
 # @Usage: Main
 
 from ftp_wc import *
+from time import sleep
 
 if __name__ == '__main__':
     for rs in ftp_conf.ftp_conf_dict:
@@ -22,3 +23,5 @@ if __name__ == '__main__':
                 print(f'FinishStatus: Exception!', '\n' * 2)
             else:
                 print(f'FinishStatus: Succeed!', '\n' * 2)
+
+    input_word = input('Input any key to quit:')

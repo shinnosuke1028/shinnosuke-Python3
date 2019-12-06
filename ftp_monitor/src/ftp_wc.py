@@ -87,13 +87,14 @@ def ftp_nlst(ftp, remote_path):
             n_lst_decode.append(rs.encode('iso-8859-1').decode('gbk'))  # 解决Python3中文乱码  latin-1 ---> gbk/gb2312
         print(n_lst_decode)
 
+        local_path = ftp_conf.file_nlst_path
         file_title = ftp_conf.fileDict['LOCAL']['title']
         file_flag = ftp_conf.fileDict['LOCAL']['flag']
         # output_file = ftp_conf.file_nlst_path + date_f(0)[0] + '_' + file_flag + '.csv'
 
         # 清单
         try:
-            cell_list_1 = FileWR(local_file_path=ftp_conf.file_nlst_path, title=file_title)
+            cell_list_1 = FileWR(local_file_path=local_path, title=file_title)
             cell_list_1.file_write_f(n_lst_decode, job_flag=file_flag)
         except Exception as e:
             print('Status: File write error!')
