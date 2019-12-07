@@ -16,6 +16,7 @@ select * from JOBS;
 select * from EMPLOYEES;
 select * from DEPARTMENTS;
 
-
+--NULL
+coalesce(a, b, 'xxx')
 
   
