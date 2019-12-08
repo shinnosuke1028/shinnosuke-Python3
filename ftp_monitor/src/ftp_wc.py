@@ -12,8 +12,8 @@ import sys
 
 # Self Repo
 # from src.func_demo.func_f import date_f
-from conf import ftp_conf
-from func_demo.Oracle2File import FileWR
+from src.conf.ftp_conf_bak import ftp_ip_dict, file_nlst_path, fileDict
+from src.func_demo.Oracle2File import FileWR
 
 
 def ftp_connect(host, usr, passwd, port=21, timeout=5):
@@ -66,7 +66,7 @@ def ftp_nlst(ftp, remote_path):
     """
     :param ftp: <class 'ftplib.FTP'>
     :param remote_path: FTP file path
-    :return:
+    :return: <class 'ftplib.FTP'>
     """
     # ftp = ftplib.FTP()
     print(f'***NLST***')
@@ -81,23 +81,16 @@ def ftp_nlst(ftp, remote_path):
         # ftp.dir() # <class 'NoneType'>
         # print(f'ftp_dir: {type(ftp_dir)}')
         cur = ftp.pwd()
-        print(f'Status: Successfully change dirName into :{cur}.')
-        n_lst = ftp.nlst()  # <class 'list'>
-        for rs in n_lst:
-            n_lst_decode.append(rs.encode('iso-8859-1').decode('gbk'))  # 解决Python3中文乱码  latin-1 ---> gbk/gb2312
-        print(n_lst_decode)
-
-        local_path = ftp_conf.file_nlst_path
-        file_title = ftp_conf.fileDict['LOCAL']['title']
-        file_flag = ftp_conf.fileDict['LOCAL']['flag']
-        # output_file = ftp_conf.file_nlst_path + date_f(0)[0] + '_' + file_flag + '.csv'
-
-        # 清单
+        print(f'Status: Successfully change dirName into {cur}.')
         try:
-            cell_list_1 = FileWR(local_file_path=local_path, title=file_title)
-            cell_list_1.file_write_f(n_lst_decode, job_flag=file_flag)
+            n_lst = ftp.nlst()  # <class 'list'>
+            for rs in n_lst:
+                n_lst_decode.append(rs.encode('iso-8859-1').decode('gbk'))  # 解决Python3中文乱码  latin-1 ---> gbk/gb2312
+            # print(type(n_lst_decode))
+            return n_lst_decode
+
         except Exception as e:
-            print('Status: File write error!')
+            print('Status: Failed to obtain the file lists!')
             print('------------------' * 2, f'\nError Details:\n{e}')
             print('------------------' * 2)
             return 1
@@ -122,5 +115,30 @@ def ftp_nlst(ftp, remote_path):
         print('------------------' * 2)
         return 1
 
+
+def ftp_nlst_write(local_path, file_flag, file_title):
+    """
+    :param local_path: local file path for out-put
+    :param file_flag:   To distinguish between different flag_lists
+    :param file_title:  file title
+    :return file_title <class 'list'> or 1
+    """
+    print(f'***NLST_WRITE***')
+
+    # 清单
+    local_path = file_nlst_path
+    file_title = fileDict['LOCAL']['title']
+    file_flag = fileDict['LOCAL']['flag']
+
+
+    # try:
+    #     cell_list_1 = FileWR(local_file_path=local_path, title=file_title)
+    #     cell_list_1.file_write_f(n_lst_decode, job_flag=file_flag)
+    #
+    # except Exception as e:
+    #     print('Status: File write error!')
+    #     print('------------------' * 2, f'\nError Details:\n{e}')
+    #     print('------------------' * 2)
+    #     return 1
 
 # if __name__ == '__main__':
