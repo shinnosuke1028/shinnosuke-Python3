@@ -25,13 +25,15 @@ ftp_ip_dict = (
         'usr': '1320964752@qq.com',
         'passwd': 'ghr921028',
         'remotePath': f'/test/{y}{m}{d}{h}',
-    }, {
-        'host': '192.168.73.1',
-        'port': 21,
-        'usr': '1320964752@qq.com',
-        'passwd': 'ghr921028',
-        'remotePath': f'/test/{y}{m}{d}',
     },
+    # {
+    #     'host': '192.168.73.1',
+    #     'port': 21,
+    #     'usr': '1320964752@qq.com',
+    #     'passwd': 'ghr921028',
+    #     'remotePath': f'/test/{y}{m}{d}',
+    # },
+
     # HW CM
     # {
     #     'host': '172.2.3.30',
