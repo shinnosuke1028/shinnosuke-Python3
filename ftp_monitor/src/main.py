@@ -5,34 +5,48 @@
 # @Usage: Main
 
 from src.ftp_wc import *
-from time import sleep
+
 
 if __name__ == '__main__':
     ftp_result = []
-    for rs in ftp_ip_dict:
-        # print(rs)
-        ftp = ftp_connect(host=rs['host'], port=rs['port'], usr=rs['usr'], passwd=rs['passwd'])
-        if ftp == 1:
-            # print(f'FinishStatus: User {rs["usr"]} Exception!', '\n'*2)
-            print(f'FinishStatus: Exception!', '\n'*2)
-
-        else:
-            remote_path = rs['remotePath']
-            # print(f'已配置的远程路径: {remote_path}')
-            ftp = ftp_nlst(ftp, remote_path=remote_path)
+    try:
+        for rs in ftp_ip_dict:
+            # print(rs)
+            ftp = ftp_connect(host=rs['host'], port=rs['port'], usr=rs['usr'], passwd=rs['passwd'])
             if ftp == 1:
-                print(f'FinishStatus: Exception!', '\n' * 2)
-            else:
-                try:
-                    ftp_result.extend(ftp)
-                    print(f'FinishStatus: Succeed!', '\n' * 2)
-                except Exception as e:
-                    print(f'FinishStatus: Exception!', '\n' * 2)
-                    print('------------------' * 2, f'\nError Details:\n{e}')
-                    print('------------------' * 2)
+                # print(f'FinishStatus: User {rs["usr"]} Exception!', '\n'*2)
+                print(f'FinishStatus: Exception!', '\n'*2)
 
+            else:
+                remote_path = rs['remotePath']
+                # print(f'已配置的远程路径: {remote_path}')
+                ftp_re = ftp_nlst(ftp, remote_path=remote_path)
+                if ftp_re == 1:
+                    print(f'FinishStatus: Exception!', '\n' * 2)
+                else:
+                    try:
+                        ftp_result.extend(ftp_re)
+                        print(f'FinishStatus: Succeed!', '\n' * 2)
+                        # ftp.quit() # 获取返回值后关闭服务
+
+                    except Exception as e:
+                        print(f'FinishStatus: Exception!', '\n' * 2)
+                        print('------------------' * 2, f'\nError Details:\n{e}')
+                        print('------------------' * 2)
+
+    except Exception as e:
+        print(f'FinishStatus: Exception!', '\n' * 2)
+        print('------------------' * 2, f'\nError Details:\n{e}')
+        print('------------------' * 2)
+
+    # print(type(ftp))
+    # ftp.quit()
+
+    ftp_nlst_write(ftp_result, local_path=file_nlst_path, file_flag='HW_CM', file_title='HW_CM')
     print(f'Final List Status: \n{ftp_result}')
-    input_word = input('Input any key to quit: ')
+
+
+    # input_word = input('Input any key to quit: ')
 
 
 # if __name__ == '__main__':

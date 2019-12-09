@@ -18,14 +18,15 @@ from src.func_demo.Oracle2File import FileWR
 
 def ftp_connect(host, usr, passwd, port=21, timeout=5):
     """
+
     :param host: remote FTP address
     :param usr: username for FTP
     :param passwd: password
     :param port: port <int>
     :param timeout: the timeout to set against the ftp socket(s)
     :return: <class 'ftplib.FTP'> or 1<num>
-    """
 
+    """
     try:
         print(f'Current Connection Info: {host}:{port}/{usr}')
         ftp = ftplib.FTP()
@@ -64,9 +65,11 @@ def ftp_connect(host, usr, passwd, port=21, timeout=5):
 
 def ftp_nlst(ftp, remote_path):
     """
+
     :param ftp: <class 'ftplib.FTP'>
     :param remote_path: FTP file path
     :return: <class 'ftplib.FTP'>
+
     """
     # ftp = ftplib.FTP()
     print(f'***NLST***')
@@ -86,7 +89,8 @@ def ftp_nlst(ftp, remote_path):
             n_lst = ftp.nlst()  # <class 'list'>
             for rs in n_lst:
                 n_lst_decode.append(rs.encode('iso-8859-1').decode('gbk'))  # 解决Python3中文乱码  latin-1 ---> gbk/gb2312
-            # print(type(n_lst_decode))
+            print(n_lst_decode)
+            ftp.retrlines(cmd='LIST')
             return n_lst_decode
 
         except Exception as e:
@@ -114,31 +118,36 @@ def ftp_nlst(ftp, remote_path):
         print('------------------' * 2, f'\nError Details:\n{e}')
         print('------------------' * 2)
         return 1
+    finally:
+        ftp.close()
 
 
-def ftp_nlst_write(local_path, file_flag, file_title):
+def ftp_nlst_write(message_date, local_path, file_flag, file_title):
     """
-    :param local_path: local file path for out-put
-    :param file_flag:   To distinguish between different flag_lists
+
+    :param message_date: list input
+    :param local_path:  local file path for out-put
+    :param file_flag:   hint to distinguish between different flag_lists
     :param file_title:  file title
-    :return file_title <class 'list'> or 1
+    :return file_title  <class 'list'> or 1
+
     """
     print(f'***NLST_WRITE***')
-
     # 清单
     local_path = file_nlst_path
     file_title = fileDict['LOCAL']['title']
     file_flag = fileDict['LOCAL']['flag']
 
+    try:
+        file = FileWR(local_file_path=local_path, title=file_title)
+        file.file_write_f(message_date=message_date, job_flag=file_flag)
+        return 0
 
-    # try:
-    #     cell_list_1 = FileWR(local_file_path=local_path, title=file_title)
-    #     cell_list_1.file_write_f(n_lst_decode, job_flag=file_flag)
-    #
-    # except Exception as e:
-    #     print('Status: File write error!')
-    #     print('------------------' * 2, f'\nError Details:\n{e}')
-    #     print('------------------' * 2)
-    #     return 1
+    except Exception as e:
+        print('Status: File write error!')
+        print('------------------' * 2, f'\nError Details:\n{e}')
+        print('------------------' * 2)
+        return 1
+
 
 # if __name__ == '__main__':

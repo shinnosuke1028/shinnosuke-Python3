@@ -161,7 +161,7 @@ class FileWR(OracleExecution):
     def file_write_f(self, message_date, job_flag, sleep_seconds=0):
         try:
             self.file_name = self.local_file_path + date_f(0)[0] + '_' + job_flag + '.csv'
-            with open(self.file_name, 'w', newline='') as file_1:
+            with open(self.file_name, 'w', newline='', encoding='UTF-8') as file_1:
                 writer_csv = csv.writer(file_1)
                 writer_csv.writerow([self.title])
                 for row in message_date:    # tqdm(message_date, ncols=80):

@@ -7,14 +7,14 @@
 """
 @FTP Connection Configuration
 """
-from func_demo.func_f import date_f
+from src.func_demo.func_f import date_f
 
 
 # 时间戳准备
-year = date_f()[3]['year']
-month = date_f()[3]['month']
-day = date_f(-3)[3]['day']
-hour = date_f()[3]['hour']
+y = date_f()[3]['year']
+m = date_f()[3]['month']
+d = date_f()[3]['day']
+h = date_f()[3]['hour']
 
 
 # FTP登录信息配置
@@ -24,13 +24,13 @@ ftp_ip_dict = (
         'port': 21,
         'usr': '1320964752@qq.com',
         'passwd': 'ghr921028',
-        'remotePath': f'/test/{year}{month}{day}{hour}',
+        'remotePath': f'/test/{y}{m}{d}{h}',
     }, {
         'host': '192.168.73.1',
         'port': 21,
         'usr': '1320964752@qq.com',
         'passwd': 'ghr921028',
-        'remotePath': f'/test/{year}{month}{day}',
+        'remotePath': f'/test/{y}{m}{d}',
     },
     # HW CM
     # {
@@ -103,9 +103,9 @@ fileDict = {
 }
 
 
-# # Demo
-# if __name__ == '__main__':
-#     print(f'/test/{year}{month}{day}{hour}')
-#     # print(date_f())
-#     # print(year)
-#     print(ftp_ip_dict[0]['remotePath'])
+# Demo
+if __name__ == '__main__':
+    print(f'/test/{y}{m}{d}{h}')
+    # print(date_f())
+    # print(year)
+    print(ftp_ip_dict[0]['remotePath'])
