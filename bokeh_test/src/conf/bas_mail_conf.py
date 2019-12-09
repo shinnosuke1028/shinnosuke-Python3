@@ -19,7 +19,7 @@ mail_file_path = '../../Python_service_daily/data/'    # D:\FTP\Mail\
 # 基本文件路径
 data_path = './data/'
 html_output_path = './data_output/'
-data_source = data_path + date_f()[0] + '_GATHER.csv'
+data_source = data_path + date_f(-1)[0] + '_GATHER.csv'
 # mail_file_path_class = r'D:\IdeaProjects\Python_service_daily\data'
 
 

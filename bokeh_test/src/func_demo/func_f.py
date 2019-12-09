@@ -39,33 +39,6 @@ def file_rm_f(local_file_path):
                 pass
 
 
-def default_f(a, data=[1]):
-    # 不要使用可变对象作为函数的默认入口参数
-    # 可变对象在函数被实例化时，初始化仅发生在首次，所以可变参数会在反复调用函数的过程中，不断累积
-    data.append(a)
-    return data
-
-
-# 如果非要使用可变对象作为入参，则使用 default_f_2 的形式，在反复实例化的过程中完成可变参数的初始化
-def default_f_2(a, data=None):
-    if data is None:
-        data = []
-    data.append(a)
-    return data
-
-
-# 一般对象不同于上述可变对象
-def default_f_origin(a = None, data = None):
-    return a, data
-
-
-if __name__ == '__main__':
-    # date_f(-1)
-    # move(3,'A','B','C')
-
-    print('第1次调用：', default_f(2))  # [1, 2]
-    print('第2次调用：', default_f(3), '\n')  # [1, 2, 3]
-
-    print('第1次调用：', default_f_origin())  # [None, None]
-    print('第2次调用(不受首次影响)：', default_f_origin(1,2))  # [1, 2]
-    print('第3次调用(不受首次影响)：', default_f_origin(3,4))  # [3, 4]
+# if __name__ == '__main__':
+#     # date_f(-1)
+#     # move(3,'A','B','C')
