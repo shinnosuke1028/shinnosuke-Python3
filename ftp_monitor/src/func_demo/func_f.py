@@ -42,15 +42,17 @@ def file_rm_f(local_file_path):
     :return:
     """
     for path in os.walk(local_file_path):
-        print(path)
+        print(path) # (<current path>, <dictionary in current path>, ['34G_output_2019121022_tmp.csv', '5G_output_20191210.xml.gz'])
         for file_cur in path[-1]:
-            print(file_cur)   # ['20190905_Gather.csv', '20190905_PKG.csv', '20190906_PKG.csv']
+            print(file_cur)   # ['34G_output_2019121022_tmp.csv', '5G_output_20191210.xml.gz']
             if file_cur.split('_')[0] != date_f(0)[0]:
-                os.remove(path[0] + '\\' + file_cur)
+                # os.remove(path[0] + '\\' + file_cur)
+                pass
             else:
                 pass
 
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
+    file_rm_f(r'D:\FTP\test\20191210')
 #     # date_f(-1)
 #     # move(3,'A','B','C')

@@ -7,12 +7,13 @@
 import ftplib
 import os
 import socket
-import sys
+import re
+# import sys
 # import csv
 
 # Self Repo
 # from src.func_demo.func_f import date_f
-from src.conf.ftp_conf_bak import ftp_ip_dict, file_nlst_path, fileDict
+from src.conf.ftp_conf_bak import *
 from src.func_demo.Oracle2File import FileWR
 
 
@@ -24,7 +25,10 @@ def ftp_connect(host, usr, passwd, port=21, timeout=5):
     :param passwd: password
     :param port: port <int>
     :param timeout: the timeout to set against the ftp socket(s)
+
     :return: <class 'ftplib.FTP'> or 1<num>
+
+    Ex: ftp = ftp_connect(host=rs['host'], port=rs['port'], usr=rs['usr'], passwd=rs['passwd'])
 
     """
     try:
@@ -63,14 +67,20 @@ def ftp_connect(host, usr, passwd, port=21, timeout=5):
             return 1
 
 
-def ftp_nlst(ftp, remote_path):
+def ftp_nlst(ftp, remote_path, re_rule):
     """
 
-    :param ftp: <class 'ftplib.FTP'>
+    :param ftp:         <class 'ftplib.FTP'>
     :param remote_path: FTP file path
-    :return: <class 'ftplib.FTP'>
+    :param re_rule:     RE: Regular expression
+
+    :return: <class 'list'> or Error 1
+
+    Ex: ftp_reply = ftp_nlst(ftp, remote_path=remote_path, re_rule=f'.*.{y}{m}{d}.*.csv$')
+
 
     """
+
     # ftp = ftplib.FTP()
     print(f'***NLST***')
 
@@ -90,8 +100,9 @@ def ftp_nlst(ftp, remote_path):
             for rs in n_lst:
                 n_lst_decode.append(rs.encode('iso-8859-1').decode('gbk'))  # 解决Python3中文乱码  latin-1 ---> gbk/gb2312
             print(n_lst_decode)
-            ftp.retrlines(cmd='LIST')
-            return n_lst_decode
+            # ftp.retrlines(cmd='LIST', <function>)
+            match_result = re_match(list_input=n_lst_decode, re_rule=re_rule)
+            return match_result
 
         except Exception as e:
             print('Status: Failed to obtain the file lists!')
@@ -99,27 +110,37 @@ def ftp_nlst(ftp, remote_path):
             print('------------------' * 2)
             return 1
 
-        # try:
-        #     with open(output_file, 'w', newline='', encoding='UTF-8') as file_1:
-        #         writer_csv = csv.writer(file_1)
-        #         writer_csv.writerow([file_title])
-        #         for row in n_lst:
-        #             writer_csv.writerow([row])  # csv提供的写入方法可以按行写入list，无需按照对象一个个写入，效率更高
-        #         # writer_csv.writerows([n_lst])
-        #     return 0
-        # except Exception as e:
-        #     print('Status: 文件写入失败!')
-        #     print('------------------' * 2, f'\nError Details:\n{e}')
-        #     print('------------------' * 2)
-        #     return 1
-
     except ftplib.all_errors as e:
         print('Status: Path switching failed!')
         print('------------------' * 2, f'\nError Details:\n{e}')
         print('------------------' * 2)
         return 1
+
     finally:
         ftp.close()
+
+
+def re_match(list_input, re_rule):
+    print(f'***RE***')
+    try:
+        match_result = [rs for rs in list_input if re.match(re_rule, rs)]
+        return match_result
+
+    # 方法2:
+    # match_result = []
+    # for rs in list_input:
+    #     if re.match(re_rule, rs):
+    #         match_result.append(rs)
+    #         print(f'Status: File match successfully. Filename: {rs}')
+    #     else:
+    #         # print(f'Match failed. Filename: {rs}')
+    #         print(f'Match failed.')
+
+    except Exception as e:
+        print('Status: RE failed!')
+        print('------------------' * 2, f'\nError Details:\n{e}')
+        print('------------------' * 2)
+        return 1
 
 
 def ftp_nlst_write(message_date, local_path, file_flag, file_title):
@@ -129,19 +150,35 @@ def ftp_nlst_write(message_date, local_path, file_flag, file_title):
     :param local_path:  local file path for out-put
     :param file_flag:   hint to distinguish between different flag_lists
     :param file_title:  file title
+
     :return file_title  <class 'list'> or 1
 
     """
     print(f'***NLST_WRITE***')
     # 清单
     local_path = file_nlst_path
-    file_title = fileDict['LOCAL']['title']
+    file_title = 'LOCAL'    # fileDict['LOCAL']['title']
     file_flag = fileDict['LOCAL']['flag']
 
     try:
         file = FileWR(local_file_path=local_path, title=file_title)
         file.file_write_f(message_date=message_date, job_flag=file_flag)
         return 0
+
+    # 方法2:
+    # try:
+    #     with open(output_file, 'w', newline='', encoding='UTF-8') as file_1:
+    #         writer_csv = csv.writer(file_1)
+    #         writer_csv.writerow([file_title])
+    #         for row in n_lst:
+    #             writer_csv.writerow([row])  # csv提供的写入方法可以按行写入list，无需按照对象一个个写入，效率更高
+    #         # writer_csv.writerows([n_lst])
+    #     return 0
+    # except Exception as e:
+    #     print('Status: 文件写入失败!')
+    #     print('------------------' * 2, f'\nError Details:\n{e}')
+    #     print('------------------' * 2)
+    #     return 1
 
     except Exception as e:
         print('Status: File write error!')
