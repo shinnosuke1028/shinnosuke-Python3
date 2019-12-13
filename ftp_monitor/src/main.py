@@ -9,7 +9,7 @@ from src.func_demo.os_f import file_create
 
 
 if __name__ == '__main__':
-    # 测试用文件&文件夹生成
+    # 测试用文件&文件夹生成，生产环境无需部署以下两步
     file_create(d_path, 0, d_name)
     file_create(f_path, 1, *file_name_list)
 
@@ -47,6 +47,7 @@ if __name__ == '__main__':
 
     # print(type(ftp))
     # ftp.quit()
+    # re_match(ftp_result, ftp_ip_dict[0]['re_rule'])
 
     ftp_nlst_write(ftp_result, local_path=file_nlst_path, file_flag='HW_CM', file_title='HW_CM')
     print(f'Final List Status: \n{ftp_result}')

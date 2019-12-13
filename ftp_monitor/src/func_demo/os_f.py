@@ -40,7 +40,7 @@ def file_create(file_path, style, *args,):
         elif style == 1:
             try:
                 with open(file=file, mode='w', newline='', encoding='UTF-8') as f:
-                    f.write(file)
+                    f.write('')
                 print(f'Status: File {rs} has been created. Path is {file}\n')
             except IOError as e:
                 print('------------------' * 2, f'\nError Details:\n{e}')

@@ -123,10 +123,10 @@ def ftp_nlst(ftp, remote_path, re_rule):
 def re_match(list_input, re_rule):
     print(f'***RE***')
     try:
-        match_result = [rs for rs in list_input if re.match(re_rule, rs)]
-        return match_result
+    # 1
+    #     match_result = [rs for rs in list_input if re.match(re_rule, rs)]
 
-    # 方法2:
+    # 2
     # match_result = []
     # for rs in list_input:
     #     if re.match(re_rule, rs):
@@ -135,6 +135,11 @@ def re_match(list_input, re_rule):
     #     else:
     #         # print(f'Match failed. Filename: {rs}')
     #         print(f'Match failed.')
+
+    # 3
+        p = re.compile(re_rule)
+        match_result = [ p.findall(rs) for rs in list_input if p.findall(rs)]
+        return match_result
 
     except Exception as e:
         print('Status: RE failed!')

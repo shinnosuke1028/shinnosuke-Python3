@@ -165,7 +165,7 @@ class FileWR(OracleExecution):
                 writer_csv = csv.writer(file_1)
                 writer_csv.writerow([self.title])
                 for row in message_date:    # tqdm(message_date, ncols=80):
-                    writer_csv.writerow([row])  # csv提供的写入方法可以按行写入list，无需按照对象一个个写入，效率更高
+                    writer_csv.writerow(row)  # csv提供的写入方法可以按行写入list，无需按照对象一个个写入，效率更高
                     sleep(sleep_seconds)
 
                 # for row in tqdm(iterable=message_date, ncols=80):
