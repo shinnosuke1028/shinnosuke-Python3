@@ -120,11 +120,12 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Python" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\IdeaProjects\Python_service_daily\src\class_test" />
+    <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\IdeaProjects\Python_service_daily\src" />
     </key>
-    <key name="CopyFile.RECENT_KEYS">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\IdeaProjects\Python_service_daily\src\data_output" />
+      <recent name="D:\IdeaProjects\Python_service_daily\src\class_test" />
       <recent name="D:\IdeaProjects\Python_service_daily\src" />
     </key>
   </component>
@@ -140,7 +141,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.email_daily">
+  <component name="RunManager" selected="Python.class_email_daily_3">
     <configuration name="class_email_daily_3" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Python_service_daily" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -207,7 +208,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="visualization_bokeh" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="sql_conf" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Python_service_daily" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -215,12 +216,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/conf" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/visualization_bokeh.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/conf/sql_conf.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -253,11 +254,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.class_email_daily_3" />
         <item itemvalue="Python.email_daily" />
+        <item itemvalue="Python.sql_conf" />
         <item itemvalue="Python.visualization_bokeh_2" />
         <item itemvalue="Python.hr_temp_3" />
-        <item itemvalue="Python.class_email_daily_3" />
-        <item itemvalue="Python.visualization_bokeh" />
       </list>
     </recent_temporary>
   </component>
@@ -314,7 +315,12 @@
       <workItem from="1574580781225" duration="29180000" />
       <workItem from="1574737881325" duration="13089000" />
       <workItem from="1574760213191" duration="34426000" />
-      <workItem from="1575249785052" duration="14936000" />
+      <workItem from="1575249785052" duration="32288000" />
+      <workItem from="1575810681482" duration="138000" />
+      <workItem from="1575891383169" duration="196000" />
+      <workItem from="1576152234553" duration="4205000" />
+      <workItem from="1576197739758" duration="2540000" />
+      <workItem from="1576558878826" duration="17851000" />
     </task>
     <servers />
   </component>
@@ -341,10 +347,11 @@
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Python_service_daily$email_daily.coverage" NAME="email_daily Coverage Results" MODIFIED="1575350042266" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/Python_service_daily$email_daily.coverage" NAME="email_daily Coverage Results" MODIFIED="1576579768356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Python_service_daily$hr_temp_1.coverage" NAME="hr_temp_1 Coverage Results" MODIFIED="1574827677358" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/func_test" />
     <SUITE FILE_PATH="coverage/Python_service_daily$visualization_bokeh.coverage" NAME="visualization_bokeh Coverage Results" MODIFIED="1574847712253" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Python_service_daily$func_f.coverage" NAME="func_f Coverage Results" MODIFIED="1573468244235" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/func_test" />
+    <SUITE FILE_PATH="coverage/Python_service_daily$sql_conf.coverage" NAME="sql_conf Coverage Results" MODIFIED="1576202150352" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/conf" />
     <SUITE FILE_PATH="coverage/Python_service_daily$visualization_bokeh_2.coverage" NAME="visualization_bokeh_2 Coverage Results" MODIFIED="1575276444741" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Python_service_daily$class_email_daily_2.coverage" NAME="class_email_daily_2 Coverage Results" MODIFIED="1573522337404" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Python_service_daily$bokeh.coverage" NAME="bokeh Coverage Results" MODIFIED="1574741918955" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
@@ -352,7 +359,7 @@
     <SUITE FILE_PATH="coverage/Python_service_daily$class_email_daily.coverage" NAME="class_email_daily Coverage Results" MODIFIED="1574409394918" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Python_service_daily$hr_temp_2.coverage" NAME="hr_temp_2 Coverage Results" MODIFIED="1574844197674" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/func_test" />
     <SUITE FILE_PATH="coverage/Python_service_daily$mysql_2_oracle.coverage" NAME="mysql_2_oracle Coverage Results" MODIFIED="1574821230389" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
-    <SUITE FILE_PATH="coverage/Python_service_daily$class_email_daily_3.coverage" NAME="class_email_daily_3 Coverage Results" MODIFIED="1575272843248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/Python_service_daily$class_email_daily_3.coverage" NAME="class_email_daily_3 Coverage Results" MODIFIED="1576595709273" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Python_service_daily$oracle_date_gather.coverage" NAME="oracle_date_gather Coverage Results" MODIFIED="1573195526895" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/Python_service_daily$oracle_scheduler.coverage" NAME="oracle_scheduler Coverage Results" MODIFIED="1573966925740" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>

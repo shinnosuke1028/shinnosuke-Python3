@@ -13,11 +13,12 @@ import os
 import copy
 import shutil
 
-from src.func_demo.func_f import date_f
+from src.func_test.func_f import date_f
 # from ..func_test.func_f import date_f
 from src.conf import bas_mail_conf
 # from conf import bas_insert_conf
 from src.conf import sql_conf
+import shutil
 
 
 def df_data_frame(data_df, column, loc_flag):
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     # 数据拷贝
     # data_source = input("Enter source file with full path: ")
     # target = input("Enter target file with full path: ")
-    file_copy(bas_mail_conf.bokeh_data_source, bas_mail_conf.data_path)
+    file_copy(path_in=bas_mail_conf.data_origin, path_target=bas_mail_conf.data_path)
 
     # HTML生成路径
     html_path = bas_mail_conf.html_output_path + date_f()[0] + '_log_lines.html'

@@ -12,7 +12,7 @@ def ftpcon_f(host, port, usr, passwd):
         ftp = FTP()
         # 打开调试级别2，显示详细信息
         ftp.set_debuglevel(2)
-        ftp.connect(host,port)
+        ftp.connect(host, port)
         ftp.login(usr, passwd)
         print(ftp.getwelcome())                     # 打印出欢迎信息
         return ftp

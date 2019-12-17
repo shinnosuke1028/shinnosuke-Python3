@@ -159,6 +159,7 @@ def mail_mime_f(receivers, message, message_str, file_name='', file_name2=''):
 
     # file_name_judge = [int(x) for x in (file_name, file_name2)]
     # print(file_name_judge)
+    print(message + '\n' + title3 + message_str)
 
     try:
         att1 = MIMEText(open(file_name, 'rb').read(), 'base64', 'utf-8')
@@ -169,7 +170,8 @@ def mail_mime_f(receivers, message, message_str, file_name='', file_name2=''):
         att2 = MIMEText(open(file_name2, 'rb').read(), 'base64', 'utf-8')
         att2["Content-Type"] = 'application/octet-stream'
         att2["Content-Disposition"] = 'attachment; filename=' + file_name2    # 这里的filename可任意，写什么名字，邮件中显示什么名字
-        msg.attach(att2)
+        msg.attach(att2)    # msg <class 'email.mime.multipart.MIMEMultipart'>
+        # print(type(att2))   # att2 <class 'email.mime.text.MIMEText'>
 
     except Exception as e:
         print('att:' + str(e))

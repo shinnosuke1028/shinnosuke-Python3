@@ -12,14 +12,14 @@ from func_test.func_f import date_f
 
 # 本地文件路径
 mail_file_path = r'D:\FTP\Mail'
-# mail_file_path_class = r'D:\IdeaProjects\Python_service_daily\src\class_test\data'
-mail_file_path_class = r'D:\IdeaProjects\Python_service_daily\data'
+# mail_file_path_class = r'D:\IdeaProjects\Python_service_daily\data'
+mail_file_path_class = r'./data_output/'
 
 # D:\\IdeaProjects\\Python_service_daily\\src\\class_test
 
 # 报表文件标题
 file_title_pkg = '执行时间', '执行包', '执行次数', '最终数据结果'  # 注意，字符串元素内逗号要用英文类型，不可使用正文逗号，不然无法按照逗号分割，填入csv
-file_title_job = '任务编号', '失败次数', '下次执行时间', '执行间隔', '执行内容'
+file_title_job = ['任务编号', '失败次数', '下次执行时间', '执行间隔', '执行内容']
 file_title_gather = 'S_DATE', 'DATA_STYLE', 'HOUR', '包内数据时间', 'NORMAL_FILE_NUM', 'NOW_NUM', 'BEF_NUM', 'NORMAL_FILE_SIZE/MB', 'NOW_SIZE/MB', 'BEF_SIZE/MB', 'FILE_NUM<今-昨>', 'FILE_SIZE<今-昨>/MB', 'FILE_NUM_STATUS', 'FILE_SIZE_STATUS', 'PATH_NAME'
 file_title_scheduler = 'LOG时间', '任务名', '任务状态', '耗时', '下次执行时间', '执行间隔', '任务激活状态', '上次执行时间', '包内容'
 
@@ -38,13 +38,16 @@ mail_file_name = ''
 mail_csv_file = mail_file_path + '\\' + mail_file_name
 
 # 收件人配置
-# receivers = ['717648387@qq.com', 'guohaoran@inspur.com', 'yangqidong@inspur.com']    # '89304594@qq.com'
-receivers = ['717648387@qq.com', 'guohaoran@inspur.com']
+receivers = ['guohaoran@inspur.com', 'yangqidong@inspur.com']    # '89304594@qq.com'
+# receivers = ['717648387@qq.com', 'guohaoran@inspur.com']
 
 
 # bokeh配置
 # data source
-bokeh_data_source = mail_file_path + date_f()[0] + '_GATHER.csv'
+data_origin = '../data/'
+data_path = './data/'
+html_output_path = './data_output/'
+data_source = data_path + date_f()[0] + '_GATHER.csv'
 # target
 # bokeh_target = data_path
 # 指标
