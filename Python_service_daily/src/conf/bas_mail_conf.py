@@ -6,6 +6,11 @@
 邮件发送配置
 """
 from func_test.func_f import date_f
+y = date_f()[3]['year']
+m = date_f()[3]['month']
+d = date_f()[3]['day']
+h = date_f()[3]['hour']
+
 
 # # 数据库连接信息
 # connect_info = 'LRNOP/Inspur*()890@192.168.62.53:1521/SHIRNOP'
@@ -30,6 +35,9 @@ fileDict = {
     'CONF_SCHEDULER': file_title_scheduler
 }
 
+# Re
+file_pattern = rf'.*{y}{m}{d}.*?.csv$'
+
 # 待入库文件名
 # 邮件的文件名自动生成
 mail_file_name = ''
@@ -38,8 +46,8 @@ mail_file_name = ''
 mail_csv_file = mail_file_path + '\\' + mail_file_name
 
 # 收件人配置
-receivers = ['guohaoran@inspur.com', 'yangqidong@inspur.com']    # '89304594@qq.com'
-# receivers = ['717648387@qq.com', 'guohaoran@inspur.com']
+# receivers = ['guohaoran@inspur.com', 'yangqidong@inspur.com']    # '89304594@qq.com'
+receivers = ['717648387@qq.com', 'guohaoran@inspur.com']
 
 
 # bokeh配置

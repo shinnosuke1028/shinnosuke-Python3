@@ -159,7 +159,7 @@ def mail_mime_f(receivers, message, message_str, file_name='', file_name2=''):
 
     # file_name_judge = [int(x) for x in (file_name, file_name2)]
     # print(file_name_judge)
-    print(message + '\n' + title3 + message_str)
+    # print(message + '\n' + title3 + message_str)
 
     try:
         att1 = MIMEText(open(file_name, 'rb').read(), 'base64', 'utf-8')

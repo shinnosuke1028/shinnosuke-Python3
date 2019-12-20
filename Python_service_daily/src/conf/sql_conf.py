@@ -32,7 +32,7 @@ conf_SCHEDULER = [connect_info, sql_scheduler, 'SCHEDULER']
 
 sqlDict = {
     'CONF_JOB': conf_JOB,
-    'CONF_PKG': conf_PKG,
+    # 'CONF_PKG': conf_PKG,
     # 'CONF_GATHER': conf_GATHER,
     # 'CONF_SCHEDULER': conf_SCHEDULER
 }

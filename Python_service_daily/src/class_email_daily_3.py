@@ -4,7 +4,8 @@
 # @File: class_email_daily3.py
 import pprint
 import sys
-import math
+import os, re
+# import math
 # from os.path import abspath, join, dirname
 
 import cx_Oracle
@@ -145,7 +146,7 @@ class OracleExecution(object):
             # 要写入.csv的文件，按行转换成最基本的list即可，一行一个list对象<即元组tuple>：list [(),()]；或list嵌套list：[[],[]]
             # 无需转换为str再拼接为数组
             try:
-                self.message_data.append(r1)    # 数据库拉取出来的一行为一个元组
+                self.message_data.append(r1)  # 数据库拉取出来的一行为一个元组
                 # print(f'r1:{r1}')
                 # r1:(datetime.datetime(2019, 12, 12, 0, 0), 'HW_4G_CM<OMC1>', '00', 23, 11, 11, 11, 369.36, 357.26,
                 # 355.16, 0, -12.1, '数量未变', '大小波动小', '/LTE/MOBILE/HUAWEI/OMC1/CM/')
@@ -185,31 +186,31 @@ class FileWR(OracleExecution):
                     writer_csv.writerow(row)  # csv提供的写入方法可以按行写入list，无需按照对象一个个写入，效率更高
                     sleep(sleep_seconds)
 
-                # for row in tqdm(iterable=message_date, ncols=80):
-                #     writer_csv.writerow(row)  # csv提供的写入方法可以按行写入list，无需按照对象一个个写入，效率更高
-                #     # sleep(0.05)
+                    # for row in tqdm(iterable=message_date, ncols=80):
+                    #     writer_csv.writerow(row)  # csv提供的写入方法可以按行写入list，无需按照对象一个个写入，效率更高
+                    #     # sleep(0.05)
 
-                # file_size = len(message_date)
-                # for row in range(file_size):
-                #     writer_csv.writerow(message_date[row])
-                #     sys.stdout.write('\r[{0}] Percent:{1}%'.format('='*int(row*50/(file_size-1)),
-                #     str(row*100/(file_size-1))))
-                #     if row == file_size:
-                #         sys.stdout.write('\r[{0}] Percent:{1}%'.format('=' * int(100), str(100)))
-                #         print('\n')
-                #     sleep(sleep_seconds)
+                    # file_size = len(message_date)
+                    # for row in range(file_size):
+                    #     writer_csv.writerow(message_date[row])
+                    #     sys.stdout.write('\r[{0}] Percent:{1}%'.format('='*int(row*50/(file_size-1)),
+                    #     str(row*100/(file_size-1))))
+                    #     if row == file_size:
+                    #         sys.stdout.write('\r[{0}] Percent:{1}%'.format('=' * int(100), str(100)))
+                    #         print('\n')
+                    #     sleep(sleep_seconds)
 
         except Exception as e:
             print(e)
 
 
 class MailSender(object):
-    def __init__(self, *file_name):  # 邮件概览/正文/文件名(含路径)
+    def __init__(self):  # 邮件概览/正文/文件名(含路径)
         # self.mail_view = mail_view
         # self.mail_text = mail_text
         # self.mail_title = mail_title
         self.mail_attach = []
-        self.file_name = file_name
+        # self.file_name = file_name
         self.msg = None
         # self.attach = None
 
@@ -236,24 +237,44 @@ class MailSender(object):
         #     self.mail_attach.append(attach_tmp)
 
         # 2
-        self.mail_attach = [self.msg_attach(fn) for fn in self.file_name]
-        self.msg.attach(self.mail_attach)
+        try:
+            cur_list_re = []
+            for fn in os.walk(bas_mail_conf.mail_file_path_class):
+                print(f'fn[-1]: {fn[-1]}')  # ./data_output/*
+                for cur in fn[-1]:
+                    x = re.search(bas_mail_conf.file_pattern, cur)
+                    print(f'cur: {cur}, x: {x}')
+                    # cur: 20191217_PKG.csv, x: None
+                    # cur: 20191218_GATHER.csv, x: <re.Match object; span=(0, 19), match='20191218_GATHER.csv'>
+                    if x:
+                        cur_list_re.append(bas_mail_conf.mail_file_path_class + x.group())
+                    else:
+                        continue
+            for rx in cur_list_re:
+                # print(f'rx: {rx}')
+                tx_tmp = self.msg_attach(rx)
+                self.msg.attach(tx_tmp)
+            print(f'Status: Mail loaded successfully.')
+        except Exception as e:
+            print(f'Status: Failed to load mail...')
+            print('------------------' * 2, f'\nError Details:\n{e}')
+            print('------------------' * 2)
 
         try:
             server = smtplib.SMTP(mail_server, 25)  # 发件人邮箱中的SMTP服务器，SMTP服务端口是25
             server.login(mail_sender, mail_password)  # 括号中对应的是发件人邮箱账号、邮箱密码
             server.sendmail(mail_sender, receivers, self.msg.as_string())  # 括号中对应的是发件人邮箱账号、收件人邮箱账号、邮件内容发送
-            print('Status: 邮件发送成功.')
+            print('Status: Mail sended successfully.')
             server.quit()  # 关闭连接
         except Exception as e:
-            print('Status: 邮件发送失败...')
+            print('Status: Failed to send mail...')
             print('------------------' * 2, f'\nError Details:\n{e}')
             print('------------------' * 2)
 
     def msg_attach(self, file_name):
         """
 
-        :return: 附件封装结果
+        :return:  type(attach): <class 'email.mime.text.MIMEText'> 附件封装结果
 
         Ex:
             att1 = MIMEText(open(file_name, 'rb').read(), 'base64', 'utf-8')
@@ -269,7 +290,8 @@ class MailSender(object):
         """
         attach = MIMEText(open(file_name, 'rb').read(), 'base64', 'utf-8')
         attach["Content-Type"] = 'application/octet-stream'
-        attach["Content-Disposition"] = 'attachment; filename=' + file_name    # 这里的filename可任意，写什么名字，邮件中显示什么名字
+        attach["Content-Disposition"] = 'attachment; filename=' + file_name  # 这里的filename可任意，写什么名字，邮件中显示什么名字
+        # print(f'type(attach): {type(attach)}')
         return attach
 
 
@@ -292,6 +314,7 @@ class MyThread(threading.Thread):
             print('------------------' * 2, f'\nError Details:\n{e}')
             print('------------------' * 2)
             return 1
+
 
 ######################################################
 ######################################################
@@ -326,9 +349,11 @@ def lock_f(lock_flag='N'):
                 result = f(*value)
                 balance.append(result)
                 print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
-            pprint.pprint(result)
+            # pprint.pprint(result)
             return balance
+
         return inner_f
+
     return threading_f
 
 
@@ -339,8 +364,11 @@ def email_f(email_flag='N'):
             if email_flag == 'Y':
                 print(f'Thread {threading.current_thread().getName()} is running. Time: {ctime()}')
                 results = f(*value)
-                # mail = MailSender(results)
-                # mail.mail_mime_action(bas_mail_conf.receivers)
+                # mail = None
+                # 注意: 这里要捕捉的是文件接口,不是数据详情,只需提供返回的文件名即可
+                # 部分邮件正文才需要从上述results中获取,这里先不添加正文信息
+                mail = MailSender()
+                mail.mail_mime_action(bas_mail_conf.receivers)
 
                 print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
                 print('2号装饰器测试结束！')
@@ -350,21 +378,23 @@ def email_f(email_flag='N'):
                 print(f'Thread {threading.current_thread().getName()} is running. Time: {ctime()}')
                 results = f(*value)
                 print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
-            pprint.pprint(results)
+            # pprint.pprint(results)
             return results
+
         return inner_f
+
     return mail_post_f
 
 
 # 程序编译时优先编译内层装饰器/再编译外层装饰器,编译顺序:email_f -> lock_f
 # 执行时,类似于Queue(先进后出),执行顺序:lock_f(执行 f(*value) 之前的内容) -> email_f -> lock_f(f(*value))
-@email_f('Y')   # 1号装饰器
-@lock_f('Y')    # 2号装饰器
+@email_f('Y')  # 1号装饰器
+@lock_f('Y')  # 2号装饰器
 def ora_job(conf_job, file_path, file_title):
     # with r_lock:
     # 实例化
     ora = FileWR(local_file_path=file_path, title=file_title)
-    ora.conf_f = conf_job   # 列表按顺序，进行数据库检索配置
+    ora.conf_f = conf_job  # 列表按顺序，进行数据库检索配置
     job_flag = ora.conf_f[2]
     ora.connect_f()
     file_mail_view_tmp = str(ora.execute_f())
@@ -373,7 +403,7 @@ def ora_job(conf_job, file_path, file_title):
     file_mail_text_tmp = ora.execute_split_f()
     del ora.message_data
     # print(type(file_mail_text_tmp))
-    ora.file_write_f(file_mail_text_tmp, job_flag,)
+    ora.file_write_f(file_mail_text_tmp, job_flag, )
     return job_flag, file_mail_view_tmp, file_mail_text_tmp
 
 
@@ -446,12 +476,4 @@ if __name__ == '__main__':
     # # 单线程
     # for rs in sqlConf.keys():
     #     ora_job(sqlConf[rs], filePath, fileTitleJob[rs])
-    ######################################################
-
-    ######################################################
-    # 传递部分
-
-    # mail_attch =
-    # email = MailSender(mail_attach= , file_name)
-
     ######################################################
