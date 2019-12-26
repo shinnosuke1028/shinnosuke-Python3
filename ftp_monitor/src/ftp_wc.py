@@ -67,16 +67,17 @@ def ftp_connect(host, usr, passwd, port=21, timeout=5):
             return 1
 
 
-def ftp_nlst(ftp, remote_path, re_rule):
+def ftp_nlst(ftp, remote_path, re_pattern):
     """
 
     :param ftp:         <class 'ftplib.FTP'>
     :param remote_path: FTP file path
-    :param re_rule:     RE: Regular expression
+    :param re_pattern:     RE: Regular expression
 
     :return: <class 'list'> or Error 1
 
-    Ex: ftp_reply = ftp_nlst(ftp, remote_path=remote_path, re_rule=f'.*.{y}{m}{d}.*.csv$')
+    Ex: ftp_reply = ftp_nlst(ftp, remote_path=remote_path, re_pattern=f'.*.{y}{m}{d}.*.csv$')
+
 
     """
 
@@ -100,7 +101,7 @@ def ftp_nlst(ftp, remote_path, re_rule):
                 n_lst_decode.append(rs.encode('iso-8859-1').decode('gbk'))  # 解决Python3中文乱码  latin-1 ---> gbk/gb2312
             print(n_lst_decode)
             # ftp.retrlines(cmd='LIST', <function>)
-            match_result = re_match(list_input=n_lst_decode, re_rule=re_rule)
+            match_result = re_match(list_input=n_lst_decode, re_pattern=re_pattern)
             return match_result
 
         except Exception as e:
@@ -119,21 +120,36 @@ def ftp_nlst(ftp, remote_path, re_rule):
         ftp.close()
 
 
-def re_match(list_input, re_rule):
+def re_match(list_input, re_pattern):
     print(f'***RE***')
     try:
-        match_result = [rs for rs in list_input if re.match(re_rule, rs)]
-        return match_result
+        # # 1
+        #     match_result = [rs for rs in list_input if re.match(re_pattern, rs)]
 
-    # 方法2:
-    # match_result = []
-    # for rs in list_input:
-    #     if re.match(re_rule, rs):
-    #         match_result.append(rs)
-    #         print(f'Status: File match successfully. Filename: {rs}')
-    #     else:
-    #         # print(f'Match failed. Filename: {rs}')
-    #         print(f'Match failed.')
+        # # 2
+        #     match_result = []
+        #     for rs in list_input:
+        #         if re.match(re_pattern, rs):
+        #             match_result.append(rs)
+        #             print(f'Status: File match successfully. Filename: {rs}')
+        #         else:
+        #             # print(f'Match failed. Filename: {rs}')
+        #             print(f'Match failed.')
+        #     print(match_result)
+        #     return match_result
+
+        # 3
+        #     match_result = []
+        #     p = re.compile(re_pattern)
+        #     for rs in list_input:
+        #         if p.findall(rs):
+        #             match_result.append(rs)
+        #             print(rs)
+
+        p = re.compile(re_pattern)
+        match_result = [ rs for rs in list_input if p.findall(rs)]  # 别忘了，findall返回的是 <class 'list'>
+        # print(match_result)
+        return match_result
 
     except Exception as e:
         print('Status: RE failed!')
@@ -155,9 +171,9 @@ def ftp_nlst_write(message_date, local_path, file_flag, file_title):
     """
     print(f'***NLST_WRITE***')
     # 清单
-    local_path = file_nlst_path
-    file_title = 'LOCAL'    # fileDict['LOCAL']['title']
-    file_flag = fileDict['LOCAL']['flag']
+    # local_path = file_nlst_path
+    # file_title = 'LOCAL'    # fileDict['LOCAL']['title']
+    # file_flag = fileDict['HW_CM']['flag']
 
     try:
         file = FileWR(local_file_path=local_path, title=file_title)

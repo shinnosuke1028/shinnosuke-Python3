@@ -7,7 +7,7 @@
 import sys
 import math
 # from os.path import abspath, join, dirname
-
+import os, re
 import cx_Oracle
 import csv
 import smtplib
@@ -29,8 +29,9 @@ from time import sleep, ctime, time
 # from conf import bas_insert_conf
 
 # sys.path.insert(0, join(abspath(dirname(__file__)), '../func_test/'))
+
 sys.path.append('./func_test')
-from func_demo.func_f import date_f
+from src.func_demo.func_f import date_f
 
 
 class OracleExecution(object):
@@ -158,103 +159,228 @@ class FileWR(OracleExecution):
         # self.message_data = message_date
         self.file_name = ''  # 可以不定义在初始化内，只作为类的私有属性
 
-    def file_write_f(self, message_date, job_flag, sleep_seconds=0):
+    def file_write_f(self, message_date, job_flag, sleep_seconds=0.001):
+        """
+
+        :param message_date:    <class: list> IN: [[],[],...,[]]
+        Ex:
+            # Each list represents for one row:
+            [['NSN_CM', '4G_output_20191225.xml.gz'], ['NSN_CM', '34G_output_20191225.xml.gz'],...]
+
+        :param job_flag:        <class: str>
+        :param sleep_seconds:   <class: int>
+
+        :return:
+
+        """
         try:
             self.file_name = self.local_file_path + date_f(0)[0] + '_' + job_flag + '.csv'
-            with open(self.file_name, 'w', newline='', encoding='UTF-8') as file_1:
+            # print(self.file_name)
+            with open(self.file_name, 'w', newline='', encoding='GBK') as file_1:
                 writer_csv = csv.writer(file_1)
-                writer_csv.writerow([self.title])
-                for row in message_date:    # tqdm(message_date, ncols=80):
-                    writer_csv.writerow([row])  # csv提供的写入方法可以按行写入list，无需按照对象一个个写入，效率更高
-                    sleep(sleep_seconds)
+                writer_csv.writerow(self.title)
+                #     # print([row])
+                writer_csv.writerows(message_date)  # 也可以一口气写入 IN: [[],[],...,[]]
 
-                # for row in tqdm(iterable=message_date, ncols=80):
+                # for row in tqdm(message_date, ncols=80):
                 #     writer_csv.writerow(row)  # csv提供的写入方法可以按行写入list，无需按照对象一个个写入，效率更高
-                #     # sleep(0.05)
-
-                # file_size = len(message_date)
-                # for row in range(file_size):
-                #     writer_csv.writerow(message_date[row])
-                #     sys.stdout.write('\r[{0}] Percent:{1}%'.format('='*int(row*50/(file_size-1)), str(row*100/(file_size-1))))
-                #     if row == file_size:
-                #         sys.stdout.write('\r[{0}] Percent:{1}%'.format('=' * int(100), str(100)))
-                #         print('\n')
                 #     sleep(sleep_seconds)
 
         except Exception as e:
             print(e)
 
 
-class MailSender(object):
-    def __init__(self, mail_attach, *file_name):  # 邮件概览/正文/文件名(含路径)
-        # self.mail_view = mail_view
-        # self.mail_text = mail_text
-        # self.mail_title = mail_title
-        self.mail_attach = mail_attach
-        self.file_name = file_name
+# class MailSender(object):
+#     def __init__(self):  # 邮件概览/正文/文件名(含路径)
+#         # self.mail_view = mail_view
+#         # self.mail_text = mail_text
+#         # self.mail_title = mail_title
+#         self.mail_attach = []
+#         # self.file_name = file_name
+#         self.msg = None
+#         # self.attach = None
+#
+#     def mail_mime_action(self, receivers):
+#         mail_sender = 'shinnosuke1028@qq.com'
+#         mail_password = 'ixwzutghdbtxbaie'
+#         mail_server = 'smtp.qq.com'
+#         # subject = 'Python SMTP 邮件测试...<数据完整性监控(日常JOB/采集)>'
+#         subject = 'Py-%s <数据完整性监控(日常JOB/昨日采集)>' % date_f(0)[0]
+#
+#         # MIMEMultipart 形式构造邮件正文
+#         self.msg = MIMEMultipart()  # 开辟一个带邮件的mail接口
+#         self.msg['From'] = formataddr(['郭皓然测试', mail_sender])
+#         self.msg['To'] = formataddr([','.join(receivers), 'utf-8'])  # 用','进行拼接，待拼接内容：join(x)内的x
+#         self.msg['Subject'] = Header(subject, 'utf-8')
+#
+#         # 邮件正文
+#         # self.msg.attach(MIMEText(message + '\n' + title + message_str, 'plain', 'utf-8'))
+#
+#         # 邮件装载附件
+#         # 1
+#         # for fn in self.file_name:
+#         #     attach_tmp = self.msg_attach(fn)
+#         #     self.mail_attach.append(attach_tmp)
+#
+#         # 2
+#         try:
+#             cur_list_re = []
+#             for fn in os.walk(bas_mail_conf.mail_file_path_class):
+#                 print(f'fn[-1]: {fn[-1]}')  # ./data_output/*
+#                 for cur in fn[-1]:
+#                     x = re.search(bas_mail_conf.file_pattern, cur)
+#                     print(f'cur: {cur}, x: {x}')
+#                     # cur: 20191217_PKG.csv, x: None
+#                     # cur: 20191218_GATHER.csv, x: <re.Match object; span=(0, 19), match='20191218_GATHER.csv'>
+#                     if x:
+#                         cur_list_re.append(bas_mail_conf.mail_file_path_class + x.group())
+#                     else:
+#                         continue
+#             for rx in cur_list_re:
+#                 # print(f'rx: {rx}')
+#                 tx_tmp = self.msg_attach(rx)
+#                 self.msg.attach(tx_tmp)
+#             print(f'Status: Mail loaded successfully.')
+#         except Exception as e:
+#             print(f'Status: Failed to load mail...')
+#             print('------------------' * 2, f'\nError Details:\n{e}')
+#             print('------------------' * 2)
+#
+#         try:
+#             server = smtplib.SMTP(mail_server, 25)  # 发件人邮箱中的SMTP服务器，SMTP服务端口是25
+#             server.login(mail_sender, mail_password)  # 括号中对应的是发件人邮箱账号、邮箱密码
+#             server.sendmail(mail_sender, receivers, self.msg.as_string())  # 括号中对应的是发件人邮箱账号、收件人邮箱账号、邮件内容发送
+#             print('Status: Mail sended successfully.')
+#             server.quit()  # 关闭连接
+#         except Exception as e:
+#             print('Status: Failed to send mail...')
+#             print('------------------' * 2, f'\nError Details:\n{e}')
+#             print('------------------' * 2)
+#
+#     def msg_attach(self, file_name):
+#         """
+#
+#         :return:  type(attach): <class 'email.mime.text.MIMEText'> 附件封装结果
+#
+#         Ex:
+#             att1 = MIMEText(open(file_name, 'rb').read(), 'base64', 'utf-8')
+#             att1["Content-Type"] = 'application/octet-stream'
+#             att1["Content-Disposition"] = 'attachment; filename=' + file_name    # 这里的filename可任意，写什么名字，邮件中显示什么名字
+#             msg.attach(att1)
+#
+#             att2 = MIMEText(open(file_name2, 'rb').read(), 'base64', 'utf-8')
+#             att2["Content-Type"] = 'application/octet-stream'
+#             att2["Content-Disposition"] = 'attachment; filename=' + file_name2    # 这里的filename可任意，写什么名字，邮件中显示什么名字
+#             msg.attach(att2)
+#
+#         """
+#         attach = MIMEText(open(file_name, 'rb').read(), 'base64', 'utf-8')
+#         attach["Content-Type"] = 'application/octet-stream'
+#         attach["Content-Disposition"] = 'attachment; filename=' + file_name  # 这里的filename可任意，写什么名字，邮件中显示什么名字
+#         # print(f'type(attach): {type(attach)}')
+#         return attach
 
-    def mail_mime_prepare(self, receivers):
-        mail_sender = 'shinnosuke1028@qq.com'
-        mail_password = 'ixwzutghdbtxbaie'
-        # receivers = ['zhyabs@gmail.com','717648387@qq.com']
-        # receivers = ['717648387@qq.com', 'yangqidong@inspur.com']    # '89304594@qq.com'
-        # receivers = ['717648387@qq.com']
-        mail_server = 'smtp.qq.com'
-        # subject = 'Python SMTP 邮件测试...<数据完整性监控(日常JOB/采集)>'
-        subject = 'Py-%s <数据完整性监控(日常JOB/昨日采集)>' % date_f(0)[0]
 
-        # MIMEMultipart 形式构造邮件正文
-        msg = MIMEMultipart()  # 开辟一个带邮件的mail接口
-        msg['From'] = formataddr(['郭皓然测试', mail_sender])
-        msg['To'] = formataddr([','.join(receivers), 'utf-8'])  # 用','进行拼接，待拼接内容：join(x)内的x
-        msg['Subject'] = Header(subject, 'utf-8')
-        # msg.attach(MIMEText(self.mail_view + '\n' + self.mail_title + self.mail_text, 'plain', 'utf-8'))
-        msg.attach(MIMEText(self.mail_attach, 'plain', 'utf-8'))
+class MyThread(threading.Thread):
+    def __init__(self, func=None, args=()):
+        super().__init__()
+        self.func = func
+        self.args = args
+        self.result = []
 
+    def run(self):
+        self.result = self.func(*self.args)
+
+    def get_result(self):
+        # noinspection PyBroadException
         try:
-            server = smtplib.SMTP(mail_server, 25)  # 发件人邮箱中的SMTP服务器，SMTP服务端口是25
-            server.login(mail_sender, mail_password)  # 括号中对应的是发件人邮箱账号、邮箱密码
-            server.sendmail(mail_sender, receivers, msg.as_string())  # 括号中对应的是发件人邮箱账号、收件人邮箱账号、邮件内容发送
-            print('邮件发送成功.')
-            server.quit()  # 关闭连接
+            return self.result
         except Exception as e:
-            print(e)
-            print('Error:邮件发送失败...')
+            print(f'Status: 线程返回结果.')
+            print('------------------' * 2, f'\nError Details:\n{e}')
+            print('------------------' * 2)
+            return 1
+
+
+######################################################
+######################################################
 
 
 # 以下是装饰器修饰函数的用法，可省略代码的反复加工
-def lock_f(thread='Y'):
-    def threading_f(f):
-        def inner_func(*value):
-            if thread == 'Y':
-                r_lock = threading.RLock()
-                with r_lock:
-                    r_lock.acquire()
-                    # print('{} 函数实例化开始..'.format(f.__name__))
-                    print('Thread', threading.current_thread().getName(), 'IS Running. Time: %s' % ctime())
-                    # print('Thread ', threading.current_thread().name, ' with rlock..')
-                    f(*value)
-                    # print('{} 函数实例化结束..'.format(f.__name__))
-                    r_lock.release()
-                    print('Thread', threading.current_thread().getName(), 'End. Time: %s' % ctime())
-            else:
-                # print('{} 函数实例化开始..'.format(f.__name__))
-                # print('Thread ', threading.current_thread().name, ' with rlock..')
-                print('Thread', threading.current_thread().getName(), 'IS Running. Time: %s' % ctime())
-                f(*value)
-                # print('{} 函数实例化结束..'.format(f.__name__))
-                print('Thread', threading.current_thread().getName(), 'End. Time: %s' % ctime())
+balance = []
+i = 0
 
-        return inner_func
+
+def lock_f(lock_flag='N'):
+    def threading_f(f):
+        def inner_f(*value):
+            print('Status: 1号装饰器测试开始！')
+            global balance, i
+            if lock_flag == 'Y':
+                i += 1
+                lock = threading.RLock()
+                with lock:
+                    # r_lock.acquire()
+                    print(f'Thread {threading.current_thread().getName()} is running. Time: {ctime()}')
+                    result = f(*value)
+                    # pprint.pprint(results)
+                    # print(type(results))    # <class 'tuple'>
+                    balance.append(result)
+                    # r_lock.release()
+                    print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
+                    print('1号装饰器测试结束！')
+            else:
+                print('Status: 1号装饰器不再调用！')
+                print(f'Thread {threading.current_thread().getName()} is running. Time: {ctime()}')
+                result = f(*value)
+                balance.append(result)
+                print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
+            # pprint.pprint(result)
+            return balance
+
+        return inner_f
 
     return threading_f
 
 
-@lock_f('Y')
+def email_f(email_flag='N'):
+    def mail_post_f(f):
+        def inner_f(*value):
+            print('Status: 2号装饰器测试开始！')
+            if email_flag == 'Y':
+                print(f'Thread {threading.current_thread().getName()} is running. Time: {ctime()}')
+                results = f(*value)
+                # mail = None
+                # 注意: 这里要捕捉的是文件接口,不是数据详情,只需提供返回的文件名即可
+                # 部分邮件正文才需要从上述results中获取,这里先不添加正文信息
+                mail = MailSender()
+                mail.mail_mime_action(bas_mail_conf.receivers)
+
+                print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
+                print('2号装饰器测试结束！')
+
+            else:
+                print('Status: 2号装饰器不再调用！')
+                print(f'Thread {threading.current_thread().getName()} is running. Time: {ctime()}')
+                results = f(*value)
+                print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
+            # pprint.pprint(results)
+            return results
+
+        return inner_f
+
+    return mail_post_f
+
+
+# 程序编译时优先编译内层装饰器/再编译外层装饰器,编译顺序:email_f -> lock_f
+# 执行时,类似于Queue(先进后出),执行顺序:lock_f(执行 f(*value) 之前的内容) -> email_f -> lock_f(f(*value))
+@email_f('Y')  # 1号装饰器
+@lock_f('Y')  # 2号装饰器
 def ora_job(conf_job, file_path, file_title):
+    # with r_lock:
     # 实例化
     ora = FileWR(local_file_path=file_path, title=file_title)
-    ora.conf_f = conf_job
+    ora.conf_f = conf_job  # 列表按顺序，进行数据库检索配置
     job_flag = ora.conf_f[2]
     ora.connect_f()
     file_mail_view_tmp = str(ora.execute_f())
@@ -262,8 +388,11 @@ def ora_job(conf_job, file_path, file_title):
     # print('1:', file_mail_view_tmp)
     file_mail_text_tmp = ora.execute_split_f()
     del ora.message_data
-    ora.file_write_f(file_mail_text_tmp, job_flag,)
-    return file_mail_view_tmp, file_mail_text_tmp
+    # print(type(file_mail_text_tmp))
+    ora.file_write_f(file_mail_text_tmp, job_flag, )
+    return job_flag, file_mail_view_tmp, file_mail_text_tmp
+
+
 
 
 def progressbar(cur, total):
