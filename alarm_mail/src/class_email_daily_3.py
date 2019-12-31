@@ -36,7 +36,7 @@ from src.conf import bas_mail_conf
 
 # sys.path.insert(0, join(abspath(dirname(__file__)), '../func_test/'))
 sys.path.append('./func_test')
-from src.func_demo.func_f import date_f
+from src.func_test.func_f import date_f
 
 
 class OracleExecution(object):
@@ -308,6 +308,7 @@ class MyThread(threading.Thread):
     def get_result(self):
         # noinspection PyBroadException
         try:
+            # print(f'Results return:')
             return self.result
         except Exception as e:
             print(f'Status: 线程返回结果.')
@@ -388,9 +389,18 @@ def email_f(email_flag='N'):
 
 # 程序编译时优先编译内层装饰器/再编译外层装饰器,编译顺序:email_f -> lock_f
 # 执行时,类似于Queue(先进后出),执行顺序:lock_f(执行 f(*value) 之前的内容) -> email_f -> lock_f(f(*value))
-@email_f('Y')  # 1号装饰器
+# @email_f('Y')  # 1号装饰器
 @lock_f('Y')  # 2号装饰器
 def ora_job(conf_job, file_path, file_title):
+    """
+
+    :param conf_job:
+    :param file_path:
+    :param file_title:
+
+    :return: <class: list>: [(job_flag, file_mail_view_tmp, file_mail_text_tmp),...,()]
+
+    """
     # with r_lock:
     # 实例化
     ora = FileWR(local_file_path=file_path, title=file_title)
@@ -417,7 +427,7 @@ if __name__ == '__main__':
     # 实例化信息&检索语句初始化
     sqlConf = sql_conf.sqlDict
     # 文件生成路径/各报表标题初始化
-    filePath, fileTitleJob = bas_mail_conf.mail_file_path_class, bas_mail_conf.fileDict
+    filePath, fileTitleJob = bas_mail_conf.mail_file_path_class, bas_mail_conf.titleDict
     ######################################################
 
     ######################################################
@@ -431,28 +441,22 @@ if __name__ == '__main__':
     for rt in threads:
         rt.start()
 
+    mail_dict_combine = {}
     for rt in threads:
         rt.join()
+        for rn in range(len(threads)):
+            # mail_dict_combine[r_tag] = rt.get_result()[0]
+            # 为什么get_result一口气返回了所有线程的结果？？？
+            mail_dict_combine[rt.get_result()[rn][0]] = rt.get_result()[rn]  # {'JOB': ('JOB','',[(),(),()]) }
+    pprint.pprint(mail_dict_combine)
 
-    # mail_dict = {}
-    mail_dict_combine = []
+    # Result return
+    # # r_tag = None
+    # # for rx in sql_conf.sqlDict.keys():
+    # #     print(f'tag: {rx}')
+    # #     r_tag = rx
+    #
     # print(threads)
-    # for rt in threads:
-    #     # mail_dict['mail_attach_flag'] = rt.get_result()[0]
-    #     # mail_dict['mail_attach_view'] = rt.get_result()[1]
-    #     # mail_dict['mail_attach_text'] = rt.get_result()[2]
-    #
-    #     # 也可以使用临时字典新建内存,并保留当前字典键值对,再放入列表
-    #     # mail_dict_copy = copy.copy(mail_dict)
-    #     # mail_dict_combine.append(mail_dict_copy)
-    #
-    #     mail_dict_combine.append(
-    #         {
-    #             'mail_attach_flag': rt.get_result()[0],
-    #             'mail_attach_view': rt.get_result()[1],
-    #             'mail_attach_text': rt.get_result()[2]
-    #         }
-    #     )
 
     # pprint.pprint(mail_dict_combine)
     print('Thread', threading.current_thread().getName(), 'End. Time: %s' % date_f()[2])
