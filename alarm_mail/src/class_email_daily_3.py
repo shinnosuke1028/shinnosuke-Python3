@@ -323,16 +323,16 @@ class MyThread(threading.Thread):
 
 # 以下是装饰器修饰函数的用法，可省略代码的反复加工
 balance = []
-i = 0
+# i = 0
 
 
 def lock_f(lock_flag='N'):
     def threading_f(f):
         def inner_f(*value):
             print('Status: 1号装饰器测试开始！')
-            global balance, i
+            global balance
             if lock_flag == 'Y':
-                i += 1
+                # i += 1
                 lock = threading.RLock()
                 with lock:
                     # r_lock.acquire()
@@ -350,7 +350,8 @@ def lock_f(lock_flag='N'):
                 result = f(*value)
                 balance.append(result)
                 print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
-            # pprint.pprint(result)
+            # print(f'balance: {balance}')    # 线程结果集合 <class: list>
+            # pprint.pprint(result)   # 单线程结果
             return balance
 
         return inner_f
@@ -389,7 +390,7 @@ def email_f(email_flag='N'):
 
 # 程序编译时优先编译内层装饰器/再编译外层装饰器,编译顺序:email_f -> lock_f
 # 执行时,类似于Queue(先进后出),执行顺序:lock_f(执行 f(*value) 之前的内容) -> email_f -> lock_f(f(*value))
-# @email_f('Y')  # 1号装饰器
+# @email_f('Y')  # 1号装饰器  # 邮件的发送需要跳出多线程，不然会出现多次发送的现象
 @lock_f('Y')  # 2号装饰器
 def ora_job(conf_job, file_path, file_title):
     """
@@ -417,51 +418,51 @@ def ora_job(conf_job, file_path, file_title):
     return job_flag, file_mail_view_tmp, file_mail_text_tmp
 
 
-if __name__ == '__main__':
+# 最后总结send
+@email_f('Y')  # 1号装饰器  # 邮件的发送需要跳出多线程，不然会出现多次发送的现象
+def main_job():
     # print(sys.path)
-    print('Thread', threading.current_thread().getName(), 'is Running. Time: %s' % date_f()[2])
 
     ######################################################
     # 准备工作
     threads = []
     # 实例化信息&检索语句初始化
-    sqlConf = sql_conf.sqlDict
+    sqlconf = sql_conf.sqlDict
     # 文件生成路径/各报表标题初始化
-    filePath, fileTitleJob = bas_mail_conf.mail_file_path_class, bas_mail_conf.titleDict
+    filepath, filetitlejob = bas_mail_conf.mail_file_path_class, bas_mail_conf.titleDict
     ######################################################
 
     ######################################################
     # 采集多线程初始化
     # r_lock = threading.RLock()
-    for rs in sqlConf.keys():
-        t = MyThread(ora_job, (sqlConf[rs], filePath, fileTitleJob[rs]))
+    for rs in sqlconf.keys():
+        t = MyThread(ora_job, (sqlconf[rs], filepath, filetitlejob[rs]))
         threads.append(t)
 
     # 线程批量启动
     for rt in threads:
         rt.start()
 
-    mail_dict_combine = {}
+    dict_final = {}
     for rt in threads:
         rt.join()
         for rn in range(len(threads)):
-            # mail_dict_combine[r_tag] = rt.get_result()[0]
+            # dict_final[r_tag] = rt.get_result()[0]
             # 为什么get_result一口气返回了所有线程的结果？？？
-            mail_dict_combine[rt.get_result()[rn][0]] = rt.get_result()[rn]  # {'JOB': ('JOB','',[(),(),()]) }
-    pprint.pprint(mail_dict_combine)
+            dict_final[rt.get_result()[rn][0]] = rt.get_result()[rn]  # {'JOB': ('JOB','',[(),(),()]) }
+    # pprint.pprint(dict_final)
+    return dict_final
 
-    # Result return
-    # # r_tag = None
-    # # for rx in sql_conf.sqlDict.keys():
-    # #     print(f'tag: {rx}')
-    # #     r_tag = rx
-    #
-    # print(threads)
 
-    # pprint.pprint(mail_dict_combine)
+if __name__ == '__main__':
+    print('Thread', threading.current_thread().getName(), 'is Running. Time: %s' % date_f()[2])
+
+    mail_dict_combine = main_job()
+    # print(f'mail_dict_combine_view:{mail_dict_combine["JOB"][1]}')
+    # print(f'mail_dict_combine_mail_text:{mail_dict_combine["JOB"][2]}')
+    # print(f'mail_dict_combine:{mail_dict_combine["PKG"][1]}')
+
     print('Thread', threading.current_thread().getName(), 'End. Time: %s' % date_f()[2])
-
-    # print(id(mail_dict_copy))    # 这里打印的内存值不同
 
     # # 下次遍历前初始化字典的写法
     # mail_dict_combine.append(mail_dict)
