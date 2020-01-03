@@ -28,7 +28,7 @@ file_title_job = ['任务编号', '失败次数', '下次执行时间', '执行�
 file_title_gather = 'S_DATE', 'DATA_STYLE', 'HOUR', '包内数据时间', 'NORMAL_FILE_NUM', 'NOW_NUM', 'BEF_NUM', 'NORMAL_FILE_SIZE/MB', 'NOW_SIZE/MB', 'BEF_SIZE/MB', 'FILE_NUM<今-昨>', 'FILE_SIZE<今-昨>/MB', 'FILE_NUM_STATUS', 'FILE_SIZE_STATUS', 'PATH_NAME'
 file_title_scheduler = 'LOG时间', '任务名', '任务状态', '耗时', '下次执行时间', '执行间隔', '任务激活状态', '上次执行时间', '包内容'
 
-fileDict = {
+titleDict = {
     'CONF_JOB': file_title_job,
     'CONF_PKG': file_title_pkg,
     'CONF_GATHER': file_title_gather,
@@ -46,8 +46,8 @@ mail_file_name = ''
 mail_csv_file = mail_file_path + '\\' + mail_file_name
 
 # 收件人配置
-# receivers = ['guohaoran@inspur.com', 'yangqidong@inspur.com']    # '89304594@qq.com'
-receivers = ['717648387@qq.com', 'guohaoran@inspur.com']
+receivers = ['guohaoran@inspur.com', 'yangqidong@inspur.com']    # '89304594@qq.com'
+# receivers = ['717648387@qq.com', 'guohaoran@inspur.com']
 
 
 # bokeh配置
