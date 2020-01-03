@@ -13,7 +13,7 @@ import csv
 import smtplib
 # import numpy as np
 import threading
-import copy
+# import copy
 
 from email.mime.text import MIMEText
 from email.header import Header
@@ -24,19 +24,19 @@ from time import sleep, ctime
 from tqdm import tqdm
 
 # CMD模式运行配置
-# from src.func_test.func_f import date_f
-# from conf import bas_insert_conf
-# from conf import bas_mail_conf
-# from conf import sql_conf
+from func_test.func_f import date_f
+from conf import bas_insert_conf
+from conf import bas_mail_conf
+from conf import sql_conf
 
 # 非CMD模式运行配置
-from src.conf import bas_mail_conf
-from src.conf import sql_conf
-from src.conf import bas_mail_conf
+# from src.conf import bas_mail_conf
+# from src.conf import sql_conf
+# from src.conf import bas_mail_conf
+# from src.func_test.func_f import date_f
 
 # sys.path.insert(0, join(abspath(dirname(__file__)), '../func_test/'))
 sys.path.append('./func_test')
-from src.func_test.func_f import date_f
 
 
 class OracleExecution(object):
@@ -214,7 +214,7 @@ class MailSender(object):
         self.msg = None
         # self.attach = None
 
-    def mail_mime_action(self, receivers):
+    def mail_mime_action(self, receivers, message_body):
         mail_sender = 'shinnosuke1028@qq.com'
         mail_password = 'ixwzutghdbtxbaie'
         mail_server = 'smtp.qq.com'
@@ -227,17 +227,20 @@ class MailSender(object):
         self.msg['To'] = formataddr([','.join(receivers), 'utf-8'])  # 用','进行拼接，待拼接内容：join(x)内的x
         self.msg['Subject'] = Header(subject, 'utf-8')
 
-        # 邮件正文
+        # 正文loading
+        print(f'Status: Mail body loading...')
+        self.msg.attach(MIMEText(message_body, 'plain', 'utf-8'))
         # self.msg.attach(MIMEText(message + '\n' + title + message_str, 'plain', 'utf-8'))
 
         # 邮件装载附件
-        # 1
+        # 方法1
         # for fn in self.file_name:
         #     attach_tmp = self.msg_attach(fn)
         #     self.mail_attach.append(attach_tmp)
 
-        # 2
+        # 方法2
         try:
+            print(f'Status: Mail attachments loading...')
             cur_list_re = []
             for fn in os.walk(bas_mail_conf.mail_file_path_class):
                 print(f'fn[-1]: {fn[-1]}')  # ./data_output/*
@@ -323,7 +326,6 @@ class MyThread(threading.Thread):
 
 # 以下是装饰器修饰函数的用法，可省略代码的反复加工
 balance = []
-# i = 0
 
 
 def lock_f(lock_flag='N'):
@@ -361,16 +363,44 @@ def lock_f(lock_flag='N'):
 
 def email_f(email_flag='N'):
     def mail_post_f(f):
-        def inner_f(*value):
+        def inner_f(i=0, *value):
             print('Status: 2号装饰器测试开始！')
             if email_flag == 'Y':
                 print(f'Thread {threading.current_thread().getName()} is running. Time: {ctime()}')
                 results = f(*value)
-                # mail = None
-                # 注意: 这里要捕捉的是文件接口,不是数据详情,只需提供返回的文件名即可
-                # 部分邮件正文才需要从上述results中获取,这里先不添加正文信息
+
+                # 获取邮件正文body，这里定位到JOB返回的内容
+                body = f'{results["JOB"][1]}\n{",".join(bas_mail_conf.titleDict["CONF_JOB"])}'
+                # 中间对象初始化
+                body_tmp = None
+                i_tmp = None
+
+                # 拆分数据结果
+                for rs in results["JOB"][2]:
+                    # print(f'i: {i}, rs: {rs}')    # tuple转正文中的字符串
+                    # Ex:
+                    # rs: (21, 0, datetime.datetime(2020, 1, 4, 8, 0), 'TRUNC(sysdate+1) + 8/(24)',..., 'PKG...;')
+                    # rs: (41, 0, datetime.datetime(2020, 1, 3, 17, 0), 'TRUNC(sysdate+1) + 17/(24)',..., 'PKG...;')
+                    # ...
+                    # 转换每一组tuple为字符串并拼接，主要是为了时间的字符显示
+                    for rn in rs:
+                        if body_tmp is None or i_tmp != i:
+                            body_tmp = str(rn)
+                            i_tmp = i
+                        else:
+                            body_tmp = str(body_tmp) + ', ' + str(rn)
+                    # print(f'body_tmp:\n {body_tmp}')
+
+                    # 按行拼接每一组转换后的tuple
+                    body = body + '\n' + body_tmp
+                    i += 1
+
+                # 打印body
+                # print(f'body:\n{body}')
+
+                # 装载/发送
                 mail = MailSender()
-                mail.mail_mime_action(bas_mail_conf.receivers)
+                mail.mail_mime_action(bas_mail_conf.receivers, body)
 
                 print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
                 print('2号装饰器测试结束！')
@@ -439,6 +469,7 @@ def main_job():
         t = MyThread(ora_job, (sqlconf[rs], filepath, filetitlejob[rs]))
         threads.append(t)
 
+    rt = None
     # 线程批量启动
     for rt in threads:
         rt.start()
@@ -446,10 +477,11 @@ def main_job():
     dict_final = {}
     for rt in threads:
         rt.join()
-        for rn in range(len(threads)):
-            # dict_final[r_tag] = rt.get_result()[0]
-            # 为什么get_result一口气返回了所有线程的结果？？？
-            dict_final[rt.get_result()[rn][0]] = rt.get_result()[rn]  # {'JOB': ('JOB','',[(),(),()]) }
+
+    for rn in range(len(threads)):
+        # print(f'rt.get_result()[rn]: {rt.get_result()[rn]}')
+        # 为什么rt.get_result()一口气返回了所有线程的结果，线程返回的是一个生成器？？？
+        dict_final[rt.get_result()[rn][0]] = rt.get_result()[rn]  # {'JOB': ('JOB','',[(),(),()]),... }
     # pprint.pprint(dict_final)
     return dict_final
 
@@ -458,6 +490,7 @@ if __name__ == '__main__':
     print('Thread', threading.current_thread().getName(), 'is Running. Time: %s' % date_f()[2])
 
     mail_dict_combine = main_job()
+    # print(f'mail_dict_combine_view:{mail_dict_combine["JOB"][0]}')
     # print(f'mail_dict_combine_view:{mail_dict_combine["JOB"][1]}')
     # print(f'mail_dict_combine_mail_text:{mail_dict_combine["JOB"][2]}')
     # print(f'mail_dict_combine:{mail_dict_combine["PKG"][1]}')
