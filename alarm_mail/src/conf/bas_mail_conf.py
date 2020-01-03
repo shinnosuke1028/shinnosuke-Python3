@@ -5,7 +5,7 @@
 """
 邮件发送配置
 """
-from src.func_demo.func_f import date_f
+from func_demo.func_f import date_f
 y = date_f()[3]['year']
 m = date_f()[3]['month']
 d = date_f()[3]['day']

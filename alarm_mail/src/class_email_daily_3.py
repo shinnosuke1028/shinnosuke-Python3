@@ -24,7 +24,7 @@ from time import sleep, ctime
 from tqdm import tqdm
 
 # CMD模式运行配置
-from func_test.func_f import date_f
+from func_demo.func_f import date_f
 from conf import bas_insert_conf
 from conf import bas_mail_conf
 from conf import sql_conf
@@ -486,6 +486,11 @@ def main_job():
     return dict_final
 
 
+def demo():
+    print(f'This is class demo.')
+
+
+# 以下是Demo
 if __name__ == '__main__':
     print('Thread', threading.current_thread().getName(), 'is Running. Time: %s' % date_f()[2])
 
