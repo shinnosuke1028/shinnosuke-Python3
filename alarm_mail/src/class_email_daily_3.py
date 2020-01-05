@@ -2,7 +2,9 @@
 # @Author: Shin
 # @Date: 2019/11/20 15:14
 # @File: class_email_daily3.py
-import pprint
+
+
+# import pprint
 import sys
 import os, re
 # import math
@@ -24,7 +26,7 @@ from time import sleep, ctime
 from tqdm import tqdm
 
 # CMD模式运行配置
-from func_demo.func_f import date_f
+from func_test.func_f import date_f
 from conf import bas_insert_conf
 from conf import bas_mail_conf
 from conf import sql_conf
@@ -102,13 +104,13 @@ class OracleExecution(object):
                 i = 0
                 for r1 in self.rs:
                     if i == 0:
-                        data_flag = r1[1]
+                        data_flag = r1[2]
                         if data_flag != 0:
                             data_flag_bad = r1[0]
                         else:
                             continue
                     elif r1[1] is not None:
-                        data_flag = data_flag + r1[1]
+                        data_flag = data_flag + r1[2]
                         if data_flag != 0:
                             data_flag_bad = data_flag_bad + ',' + r1[0]
                             # 这里也可以直接写成 data_flag_bad = data_flag_bad, r1[0]
@@ -371,6 +373,7 @@ def email_f(email_flag='N'):
 
                 # 获取邮件正文body，这里定位到JOB返回的内容
                 body = f'{results["JOB"][1]}\n{",".join(bas_mail_conf.titleDict["CONF_JOB"])}'
+
                 # 中间对象初始化
                 body_tmp = None
                 i_tmp = None
@@ -486,11 +489,6 @@ def main_job():
     return dict_final
 
 
-def demo():
-    print(f'This is class demo.')
-
-
-# 以下是Demo
 if __name__ == '__main__':
     print('Thread', threading.current_thread().getName(), 'is Running. Time: %s' % date_f()[2])
 

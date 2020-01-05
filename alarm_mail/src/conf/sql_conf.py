@@ -11,9 +11,9 @@ connect_info = 'LRNOP/Inspur*()890@192.168.62.53:1521/SHIRNOP'
 # 查询SQL
 sql_pkg = '''select * from db_check t where t.EXECUTE_SDATE >= trunc(sysdate)'''
 
-sql_job = '''select job, failures, next_date, interval, what from user_jobs j where BROKEN='N' union all 
-             select job, failures, next_date, interval, what from user_jobs@wrnop_44 k union all 
-             select job, failures, next_date, interval, what from user_jobs@grnop_38 l 
+sql_job = '''select job, '4G' as owner, failures, next_date, interval, what from user_jobs j where BROKEN='N' union all
+             select job, '3G' as owner, failures, next_date, interval, what from user_jobs@wrnop_44 k union all
+             select job, '2G' as owner, failures, next_date, interval, what from user_jobs@grnop_38 l
           '''
 
 sql_gather = '''select * from CSV_CHECKRESULT_HOUR'''
