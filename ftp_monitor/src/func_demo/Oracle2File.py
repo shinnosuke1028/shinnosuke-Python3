@@ -30,7 +30,7 @@ from time import sleep, ctime, time
 
 # sys.path.insert(0, join(abspath(dirname(__file__)), '../func_test/'))
 
-sys.path.append('./func_test')
+sys.path.append('./func_demo')
 from src.func_demo.func_f import date_f
 
 
@@ -176,18 +176,21 @@ class FileWR(OracleExecution):
         try:
             self.file_name = self.local_file_path + date_f(0)[0] + '_' + job_flag + '.csv'
             # print(self.file_name)
-            with open(self.file_name, 'w', newline='', encoding='GBK') as file_1:
-                writer_csv = csv.writer(file_1)
+            with open(self.file_name, 'w', newline='', encoding='GBK') as f:
+                writer_csv = csv.writer(f)
                 writer_csv.writerow(self.title)
                 #     # print([row])
                 writer_csv.writerows(message_date)  # 也可以一口气写入 IN: [[],[],...,[]]
+            return 0
 
                 # for row in tqdm(message_date, ncols=80):
                 #     writer_csv.writerow(row)  # csv提供的写入方法可以按行写入list，无需按照对象一个个写入，效率更高
                 #     sleep(sleep_seconds)
-
         except Exception as e:
-            print(e)
+            print('Status: FileWR.file_write_f!')
+            print('------------------' * 2, f'\nError Details:\n{e}')
+            print('------------------' * 2)
+            return 1
 
 
 # class MailSender(object):
@@ -289,11 +292,17 @@ class MyThread(threading.Thread):
         self.result = []
 
     def run(self):
-        self.result = self.func(*self.args)
+        try:
+            print(f'Status: 线程入口.')
+            self.result = self.func(*self.args)
+        except Exception as e:
+            # raise (f'Exception: {str(e)}')
+            raise ('Bad execution: %s' % str(e))
 
     def get_result(self):
         # noinspection PyBroadException
         try:
+            print(f'Results return.')
             return self.result
         except Exception as e:
             print(f'Status: 线程返回结果.')
@@ -343,38 +352,38 @@ def lock_f(lock_flag='N'):
     return threading_f
 
 
-def email_f(email_flag='N'):
-    def mail_post_f(f):
-        def inner_f(*value):
-            print('Status: 2号装饰器测试开始！')
-            if email_flag == 'Y':
-                print(f'Thread {threading.current_thread().getName()} is running. Time: {ctime()}')
-                results = f(*value)
-                # mail = None
-                # 注意: 这里要捕捉的是文件接口,不是数据详情,只需提供返回的文件名即可
-                # 部分邮件正文才需要从上述results中获取,这里先不添加正文信息
-                mail = MailSender()
-                mail.mail_mime_action(bas_mail_conf.receivers)
-
-                print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
-                print('2号装饰器测试结束！')
-
-            else:
-                print('Status: 2号装饰器不再调用！')
-                print(f'Thread {threading.current_thread().getName()} is running. Time: {ctime()}')
-                results = f(*value)
-                print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
-            # pprint.pprint(results)
-            return results
-
-        return inner_f
-
-    return mail_post_f
+# def email_f(email_flag='N'):
+#     def mail_post_f(f):
+#         def inner_f(*value):
+#             print('Status: 2号装饰器测试开始！')
+#             if email_flag == 'Y':
+#                 print(f'Thread {threading.current_thread().getName()} is running. Time: {ctime()}')
+#                 results = f(*value)
+#                 # mail = None
+#                 # 注意: 这里要捕捉的是文件接口,不是数据详情,只需提供返回的文件名即可
+#                 # 部分邮件正文才需要从上述results中获取,这里先不添加正文信息
+#                 mail = MailSender()
+#                 mail.mail_mime_action(bas_mail_conf.receivers)
+#
+#                 print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
+#                 print('2号装饰器测试结束！')
+#
+#             else:
+#                 print('Status: 2号装饰器不再调用！')
+#                 print(f'Thread {threading.current_thread().getName()} is running. Time: {ctime()}')
+#                 results = f(*value)
+#                 print(f'Thread {threading.current_thread().getName()} end. Time: {ctime()}')
+#             # pprint.pprint(results)
+#             return results
+#
+#         return inner_f
+#
+#     return mail_post_f
 
 
 # 程序编译时优先编译内层装饰器/再编译外层装饰器,编译顺序:email_f -> lock_f
 # 执行时,类似于Queue(先进后出),执行顺序:lock_f(执行 f(*value) 之前的内容) -> email_f -> lock_f(f(*value))
-@email_f('Y')  # 1号装饰器
+# @email_f('Y')  # 1号装饰器
 @lock_f('Y')  # 2号装饰器
 def ora_job(conf_job, file_path, file_title):
     # with r_lock:
@@ -406,36 +415,22 @@ def progressbar(cur, total):
 
 # if __name__ == '__main__':
 #     # print(sys.path)
-#     print('Thread', threading.current_thread().getName(), 'IS Running. Time: %s' % ctime())
+#     print('Thread', threading.current_thread().getName(), 'is Running. Time: %s' % date_f()[2])
 #
+#     ######################################################
+#     # 准备工作
 #     threads = []
-#     t2 = None
-#
 #     # 实例化信息&检索语句初始化
-#     sqlConf = {
-#         'CONF_JOB': sql_conf.conf_JOB,
-#         'CONF_PKG': sql_conf.conf_PKG,
-#         'CONF_GATHER': sql_conf.conf_GATHER,
-#         'CONF_SCHEDULER': sql_conf.conf_SCHEDULER
-#     }
-#     # 文件生成路径
-#     filePath = bas_mail_conf.mail_file_path_class
+#     sqlConf = sql_conf.sqlDict
+#     # 文件生成路径/各报表标题初始化
+#     filePath, fileTitleJob = bas_mail_conf.mail_file_path_class, bas_mail_conf.fileDict
+#     ######################################################
 #
-#     # 各报表标题初始化
-#     fileTitleJob = {
-#         'CONF_JOB': bas_mail_conf.file_title_job,
-#         'CONF_PKG': bas_mail_conf.file_title_pkg,
-#         'CONF_GATHER': bas_mail_conf.file_title_gather,
-#         'CONF_SCHEDULER': bas_mail_conf.file_title_scheduler
-#     }
-#
-#     # 线程初始化
+#     ######################################################
+#     # 采集多线程初始化
+#     # r_lock = threading.RLock()
 #     for rs in sqlConf.keys():
-#         # print(rs)
-#         # print('%s配置:' % rs, sqlConf[rs])
-#         # print('%sTITLE配置:' % rs, fileTitleJob[rs])
-#         t = threading.Thread(target=ora_job, args=(sqlConf[rs], filePath, fileTitleJob[rs]))
-#         # print(t.getName(), '\n')
+#         t = MyThread(ora_job, (sqlConf[rs], filePath, fileTitleJob[rs]))
 #         threads.append(t)
 #
 #     # 线程批量启动
@@ -445,17 +440,46 @@ def progressbar(cur, total):
 #     for rt in threads:
 #         rt.join()
 #
+#     # mail_dict = {}
+#     mail_dict_combine = []
+#     # print(threads)
+#     # for rt in threads:
+#     #     # mail_dict['mail_attach_flag'] = rt.get_result()[0]
+#     #     # mail_dict['mail_attach_view'] = rt.get_result()[1]
+#     #     # mail_dict['mail_attach_text'] = rt.get_result()[2]
+#     #
+#     #     # 也可以使用临时字典新建内存,并保留当前字典键值对,再放入列表
+#     #     # mail_dict_copy = copy.copy(mail_dict)
+#     #     # mail_dict_combine.append(mail_dict_copy)
+#     #
+#     #     mail_dict_combine.append(
+#     #         {
+#     #             'mail_attach_flag': rt.get_result()[0],
+#     #             'mail_attach_view': rt.get_result()[1],
+#     #             'mail_attach_text': rt.get_result()[2]
+#     #         }
+#     #     )
+#
+#     # pprint.pprint(mail_dict_combine)
+#     print('Thread', threading.current_thread().getName(), 'End. Time: %s' % date_f()[2])
+#
+#     # print(id(mail_dict_copy))    # 这里打印的内存值不同
+#
+#     # # 下次遍历前初始化字典的写法
+#     # mail_dict_combine.append(mail_dict)
+#     # mail_dict = {}
+#     # print(id(mail_dict_combine))    # 这里打印的内存值虽相同,但??????
+#
+#     # # 注意:下面的写法有问题
+#     # 若直接mail_dict_combine.append(mail_dict),会出现覆盖情况,数据始终指向mail_dict初始内存,故只能取到最后一组数据
+#     # mail_dict_combine.append(mail_dict)
+#     # print(id(mail_dict_combine)) # 即多次打印这里的内存值相同
+#
+#     # print(mail_dict_combine)
+#
+#     ######################################################
 #     ######################################################
 #     # # 单线程
 #     # for rs in sqlConf.keys():
 #     #     ora_job(sqlConf[rs], filePath, fileTitleJob[rs])
-#
-#     print('Thread', threading.current_thread().getName(), 'End. Time: %s' % ctime())
-#
-#     # # 测试
-#     # t = threading.Thread(target=ora_job, args=(sqlConf['CONF_PKG'], filePath, fileTitleJob['CONF_PKG']))
-#     # t.start()
-#     # t.join()
-#
-#     # print(threads)
-#     # print(date_f()[1])
+#     ######################################################
